@@ -1,58 +1,97 @@
+import java.lang.NumberFormatException
+
 fun main() {
-    var notExit: Boolean = true
-    var doublyLinkedList: DoublyLinkedList = DoublyLinkedList()
-    while (notExit) {
-        println()
+    var exit: Boolean = false
+    var doublyLinkedList = DoublyLinkedList()
+    while (!exit) {
         println()
         println("....Enter your choice....")
         println(" 1. for add element at head position.")
         println(" 2. for add element at any index position.")
-        println(" 3. for show forward list")
-        println(" 4. for show backward list")
-        println(" 5. for delete object at any index")
+        println(" 3. for add element at tail position.")
+        println(" 4. for show forward list")
+        println(" 5. for show backward list")
+        println(" 6. for delete object at any index")
+        println(" 7. for delete object of head position.")
+        println(" 8. for delete object of tail position.")
+        println(" 9. for get an object in particular index.")
         println(" 0. for exit")
         print("Please enter your choice  : ")
-        var choice: Int = 0
         try {
-            choice = Integer.valueOf(readLine())
-        } catch (e: Exception) {
-            println("wrong input.")
+            var choice: Int = Integer.valueOf(readLine())
+            when (choice) {
+                0 -> exit = true
+                1 -> addElementAtHeadPosition(doublyLinkedList)
+                2 -> addElementAtIndexPosition(doublyLinkedList)
+                3 -> addElementAtTailPosition(doublyLinkedList)
+                4 -> showForwardList(doublyLinkedList)
+                5 -> showBackwardList(doublyLinkedList)
+                6 -> deleteElementAtIndex(doublyLinkedList)
+                7 -> deleteElementOfHead(doublyLinkedList)
+                8 -> deleteElementOfTail(doublyLinkedList)
+                9 -> getObjectOfAnIndex(doublyLinkedList)
+                else -> println("your choice is not exist.")
+            }
+        } catch (e: NumberFormatException) {
+            println("your choice is not exist.")
         }
-        when (choice) {
-            1 -> addObjectAtHeadPosition(doublyLinkedList)
-            2 -> addObjectAtIndexPosition(doublyLinkedList)
-            3 -> showForwardList(doublyLinkedList)
-            4 -> showBackwardList(doublyLinkedList)
-            5 -> deleteObjectAtIndex(doublyLinkedList)
-            0 -> notExit = false
-        }
+
     }
 }
 
-fun deleteObjectAtIndex(doublyLinkedList: DoublyLinkedList) {
-    print("please provide position which you want to delete.")
-    var index: Int = 0
+fun deleteElementOfHead(doublyLinkedList: DoublyLinkedList) {
+    doublyLinkedList.deleteOfHead()
+}
+
+fun deleteElementOfTail(doublyLinkedList: DoublyLinkedList) {
+    doublyLinkedList.deleteOfTail()
+}
+
+fun getObjectOfAnIndex(doublyLinkedList: DoublyLinkedList) {
+    print("please provide position which you want to display.")
     try {
-        index = Integer.valueOf(readLine())
+        var index = Integer.valueOf(readLine())
+        var student = doublyLinkedList.get(index)
+        if (student == -1) {
+            println("At this index object not found.")
+            return
+        }
+        if (student is Student) {
+            student.display()
+        }
     } catch (e: Exception) {
         println("wrong input.")
     }
-    doublyLinkedList.deleteAtIndex(index)
+}
+
+fun addElementAtTailPosition(doublyLinkedList: DoublyLinkedList) {
+    doublyLinkedList.addAtTail(getValueForAnObject())
+}
+
+fun deleteElementAtIndex(doublyLinkedList: DoublyLinkedList) {
+    print("please provide position which you want to delete :")
+    try {
+        var index = Integer.valueOf(readLine())
+        doublyLinkedList.deleteAtIndex(index)
+    } catch (e: Exception) {
+        println("wrong input.")
+    }
+
 }
 
 fun showBackwardList(doublyLinkedList: DoublyLinkedList) {
     doublyLinkedList.traverseBackwardList()
     if (doublyLinkedList.list.size == 0) {
         println("list has no element.")
-    } else {
-        println("list has some element." + doublyLinkedList.list.size)
-        for (element in doublyLinkedList.list) {
-            if (element is Student) {
-                var student: Student = element
-                student.display()
-            } else {
-                println("element is not Student")
-            }
+        return
+    }
+    println("size of list : " + doublyLinkedList.list.size)
+    for (element in doublyLinkedList.list) {
+        if (element is Student) {
+            var student: Student = element
+            student.display()
+        } else {
+            println("element is not Student")
         }
     }
 }
@@ -62,7 +101,7 @@ fun showForwardList(doublyLinkedList: DoublyLinkedList) {
     if (doublyLinkedList.list.size == 0) {
         println("list has no element.")
     } else {
-        println("list has some element." + doublyLinkedList.list.size)
+        println("size of list : " + doublyLinkedList.list.size)
         for (element in doublyLinkedList.list) {
             if (element is Student) {
                 var student: Student = element
@@ -74,38 +113,37 @@ fun showForwardList(doublyLinkedList: DoublyLinkedList) {
     }
 }
 
-fun addObjectAtIndexPosition(doublyLinkedList: DoublyLinkedList) {
-    print("please enter position at which you want to add object : ")
-    var index: Int = 0
+fun addElementAtIndexPosition(doublyLinkedList: DoublyLinkedList) {
     try {
-        index = Integer.valueOf(readLine())
+        print("please enter position at which you want to add object : ")
+        var index = Integer.valueOf(readLine())
+        if (index > doublyLinkedList.list.size && index < 0) {
+            println("Your index position is wrong.")
+            return
+        }
+        doublyLinkedList.addAtIndex(getValueForAnObject(), index)
     } catch (e: Exception) {
         println("wrong input.")
     }
-    doublyLinkedList.addAtIndex(getValueForAnObject(), index)
+
 }
 
-fun addObjectAtHeadPosition(doublyLinkedList: DoublyLinkedList) {
-    println("you pressed one.")
+fun addElementAtHeadPosition(doublyLinkedList: DoublyLinkedList) {
     doublyLinkedList.addAtHead(getValueForAnObject())
 }
 
-fun getValueForAnObject(): Student {
-    print("Please enter name of student = ")
-    var name: String = ""
-    try {
-        name = readLine().toString()
-    } catch (e: Exception) {
-        println("wrong input.")
+fun getValueForAnObject(): Student? {
+
+    return try {
+        print("Please enter name of student = ")
+        var name = readLine().toString()
+        print("Please enter roll no. of student = ")
+        var rollNo = Integer.valueOf(readLine())
+        Student(name, rollNo)
+    } catch (e: NumberFormatException) {
+        println("your input is wrong.")
+        null
     }
-    print("Please enter roll no. of student = ")
-    var rollNo: Int = 0
-    try {
-        rollNo = Integer.valueOf(readLine())
-    } catch (e: Exception) {
-        println("wrong input.")
-    }
-    return Student(name, rollNo)
 }
 
 class Student(var name: String, var rollNo: Int) {
@@ -124,25 +162,32 @@ class DoublyLinkedList {
     }
 
     fun addAtHead(element: Any?) {
+        if (element == null) {
+            println("some thing went wrong , can not proceed further. add unsuccessful !")
+            return
+        }
         val h = this.head
         val newNode = Node(element)
         newNode.next = this.head
         head = newNode
         if (h == null) tail = newNode else h.prev = newNode
         this.length++
+        println("Added one element at head position successfully.")
     }
 
     fun addAtTail(element: Any?) {
-        var h = this.head
-        val newNode = Node(element)
-        newNode.next = null
-        while (h?.next != null) {
-            h = h.next
+        if (element == null) {
+            println("some thing went wrong , can not proceed further. add unsuccessful !")
+            return
         }
-        h?.next = newNode
-        newNode.prev = h
+        var t = this.tail
+        val newNode = Node(element)
+        newNode.prev = this.tail
         tail = newNode
+        if (t == null) head = newNode else t.next = newNode
+
         this.length++
+        println("Added one element at tail position successfully.")
     }
 
     fun get(index: Int): Any? {
@@ -157,6 +202,12 @@ class DoublyLinkedList {
     }
 
     fun addAtIndex(element: Any?, index: Int) {
+//        when element is not null then it executed.
+//        element?.let {  }
+        if (element == null) {
+            println("some thing went wrong , can not proceed further. add unsuccessful !")
+            return
+        }
         if (index > this.length || index < 0) {
             println("Your index position is wrong.")
             return
@@ -182,6 +233,7 @@ class DoublyLinkedList {
         h?.next = newNode
         newNode.prev = h
         this.length++
+        println("Added one element at $index position successfully.")
     }
 
     fun deleteAtIndex(index: Int) {
@@ -200,9 +252,36 @@ class DoublyLinkedList {
         hPrev?.next = hNext
         hNext?.prev = hPrev
         length--
+        println("Delete of an element at $index position is successful. ")
     }
 
-    fun getLength(): Int = this.length
+    fun deleteOfHead() {
+        val h = head
+        if (h == null) {
+            println("There is no element exist.")
+            return
+        }
+        head = h?.next
+        head?.prev = null
+        if (h.next == null) {
+            tail = head
+        }
+        println("Delete of an element at head is successful. ")
+    }
+
+    fun deleteOfTail() {
+        val t = tail
+        if (t == null) {
+            println("There is no element exist.")
+            return
+        }
+        tail = t?.prev
+        tail?.next = null
+        if (t.prev == null) {
+            head = tail
+        }
+        println("Delete of an element at tail is successful. ")
+    }
 
     fun traverseForwardList() {
         list.clear()
